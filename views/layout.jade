@@ -1,0 +1,51 @@
+!!! 5
+html
+  head
+    title ifit
+    link(type='text/css',rel='stylesheet',href='/css/style.css')
+  body
+    script(src='http://static.ak.fbcdn.net/connect/en_US/core.js')
+    script(src='//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js')
+    script
+      window.jQuery || document.write('<script src="/js/libs/jquery-1.7.1.min.js"><\\/script>')
+    script(defer, src='/socket.io/socket.io.js')
+    if (env == "local")
+      each type in jsConfig
+        each file in type
+          script(src='/js/' + file)
+    else
+      - src = '/js/.build/' + version + '/main.js'
+      script(src=src)
+      script
+        (function() {
+          var onload = function() {
+            var s = document.createElement('script');
+            s.src = '/js/.build/#{version}/onload.js';
+            head = document.getElementsByTagName('head')[0];
+            head.appendChild(s);
+          };
+          if (window.attachEvent) {
+            window.attachEvent('onload', onload);
+          } else if (window.addEventListener) {
+            window.addEventListener('load', onload, false);
+          } else {
+            document.addEventListener('load', onload, false);
+          }
+        })();
+    .navbar.navbar-fixed-top
+      .navbar-inner
+        .container-fluid
+          a.btn.btn-navbar(data-toggle="collapse",data-target=".nav-collapse")
+            span.icon-bar
+            span.icon-bar
+            span.icon-bar
+          a.brand(href='/') redis-queue
+    #main.container-fluid
+      .row-fluid
+        if typeof(menu) != 'undefined'
+          != partial('_leftnav', {menu: menu, url: url})
+        .span10
+          if typeof topMenu !== 'undefined'
+            != partial('_topnav', {topMenu: topMenu, lowerMenu: lowerMenu, url: url})
+          .row-fluid
+            !=body

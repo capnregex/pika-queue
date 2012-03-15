@@ -1,0 +1,21 @@
+.row-fluid.topnav
+  title = (typeof title === "undefined" ? "ifit" : title)
+  h1= title
+  ul.topnav
+    each link in topMenu
+      if url === link.url || url != '/' && url.match("^" + link.url)
+        cl = "active"
+      else
+        cl = ""
+      li(class=cl)
+        a(href=link.url)!= link.name
+if typeof lowerMenu !== "undefined"
+  .row-fluid
+    ul.topnav2
+      each link in lowerMenu
+        if url === link.url
+          cl = "active"
+        else
+          cl = ""
+        li(class=cl)
+          a(href=link.url)!= link.name
