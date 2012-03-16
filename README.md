@@ -12,7 +12,6 @@ A `worker` in an entity that monitors a job queue, processes the job, and then s
 
     var queueName = 'work-queue';
     var producer = new RedisQueue();
-    
 
     // Pass in a callback if you wish to receive notification when the job is complete.
     producer.queueJob(queueName, {data: "Job Data"}, function(err, notification) {
