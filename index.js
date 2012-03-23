@@ -4,8 +4,8 @@ var redis = require('redis')
   , uuid = require('node-uuid')
   , Redis = require('./lib/redis');
 
-var RedisQueue = function() {
-  this.client = new Redis();
+var RedisQueue = function(conf) {
+  this.client = new Redis(conf);
 }
 
 RedisQueue.prototype.queueJob = function(queueName, jobDescription, cb) {
