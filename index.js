@@ -42,7 +42,9 @@ RedisQueue.prototype.monitorJobQueue = function(queueName, cb) {
 }
 
 RedisQueue.prototype.publishNotification = function(queueName, jobDescription, data) {
-  this.client.publish(queueName + '-notification:' + jobDescription._jobID, JSON.stringify(data));
+  var publishClient = new Redis();
+  publishClient.publish(queueName + '-notification:' + jobDescription._jobID, JSON.stringify(data));
+  publishClient.quit();
 }
 
 module.exports = RedisQueue;
