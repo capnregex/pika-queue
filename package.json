@@ -6,13 +6,12 @@
   "private": true,
   "main": "index.js",
   "dependencies": {
-    "async": "*",
-    "confrodo": ">= 0.0.4",
     "node-uuid": "*",
     "hiredis": "*",
     "redis": "*"
   },
   "devDependencies": {
+    "async": "*",
     "mocha": "*",
     "should": "*"
   },

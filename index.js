@@ -1,7 +1,6 @@
 "use strict";
 
-var conf = require('./config')
-  , redis = require('redis')
+var redis = require('redis')
   , uuid = require('node-uuid')
   , Redis = require('./lib/redis');
 
