@@ -6,6 +6,7 @@ var redis = require('redis')
 
 var RedisQueue = function(conf) {
   this.client = new Redis(conf);
+  this.conf = conf;
 }
 
 RedisQueue.prototype.queueJob = function(queueName, jobDescription, cb) {
@@ -20,7 +21,7 @@ RedisQueue.prototype.queueJob = function(queueName, jobDescription, cb) {
   }
   
   if (cb) {
-    var notificationClient = new Redis();
+    var notificationClient = new Redis(this.conf);
     notificationClient.subscribe(queueName + '-notification:' + jobID);
     notificationClient.on('message', function(channel, message) {
       cb(null, JSON.parse(message));
@@ -42,7 +43,7 @@ RedisQueue.prototype.monitorJobQueue = function(queueName, cb) {
 }
 
 RedisQueue.prototype.publishNotification = function(queueName, jobDescription, data) {
-  var publishClient = new Redis();
+  var publishClient = new Redis(this.conf);
   publishClient.publish(queueName + '-notification:' + jobDescription._jobID, JSON.stringify(data));
   publishClient.quit();
 }
