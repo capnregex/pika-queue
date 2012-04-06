@@ -2,7 +2,7 @@
   "name": "redis-queue",
   "description": "RedisQueue",
   "author": "Scott Hillman <scotth@mediarain.com>",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "private": true,
   "main": "index.js",
   "dependencies": {
