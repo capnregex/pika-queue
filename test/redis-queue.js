@@ -1,6 +1,6 @@
 var RedisQueue = require('../index')
   ,	should = require('should')
-  , async = require('async'); 
+  , async = require('async');
 
 describe('Redis Queue', function() {
   it('End to End testing', function(done) {
@@ -10,8 +10,8 @@ describe('Redis Queue', function() {
     var producer = new RedisQueue();
     var worker = new RedisQueue();
 
-    worker.monitorJobQueue(queueName, function(job) {
-      worker.publishNotification(queueName, job, {message: successMessage});
+    worker.monitorJobQueue(queueName, function(job, fn) {
+      fn({message: successMessage});
     });
 
     producer.queueJob(queueName, {job: "First job"}, function(err, data) {
@@ -19,7 +19,7 @@ describe('Redis Queue', function() {
       done();
     })
   });
-  
+
   it('Should throw an error', function(done) {
     var queueName = "test-failure";
     var producer = new RedisQueue();
@@ -30,24 +30,24 @@ describe('Redis Queue', function() {
       done();
     });
   });
-  
+
   it('Should handle more than one job', function(done) {
     var queueName = 'test-multiple-jobs';
     var successMessage = "Success";
-    
+
     var producer = new RedisQueue();
     var worker = new RedisQueue();
-  
-    worker.monitorJobQueue(queueName, function(job) {
-      worker.publishNotification(queueName, job, {message: successMessage});
+
+    worker.monitorJobQueue(queueName, function(job, fn) {
+      fn({message: successMessage});
     });
-    
+
     async.parallel([
       function(cb) {
         producer.queueJob(queueName, {job: "First job"}, function(err, data) {
           cb(err, data);
         })
-      }, 
+      },
       function(cb) {
         producer.queueJob(queueName, {job: "Second job"}, function(err, data) {
           cb(err, data);
@@ -59,19 +59,19 @@ describe('Redis Queue', function() {
       done();
     });
   });
-  
-  
+
+
   it('Should make post to a queue, and not wait for a response', function(done) {
     var queueName = 'test-no-monitor';
     var successMessage = "Success";
-    
+
     var producer = new RedisQueue();
     var worker = new RedisQueue();
-     
+
     producer.queueJob(queueName, {job: "My test job"});
-    
-    worker.monitorJobQueue(queueName, function(job) {
-      worker.publishNotification(queueName, job, {message: successMessage});
+
+    worker.monitorJobQueue(queueName, function(job, fn) {
+      fn({message: successMessage});
       done();
     });
   });

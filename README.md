@@ -10,31 +10,28 @@ A `worker` in an entity that monitors a job queue, processes the job, and then s
 
 ### Example of a `producer`:
 
-    var queueName = 'work-queue';
-    var producer = new RedisQueue();
+```javascript
+var queueName = 'work-queue';
+var producer = new RedisQueue();
 
-    // Pass in a callback if you wish to receive notification when the job is complete.
-    producer.queueJob(queueName, {data: "Job Data"}, function(err, notification) {
-      // Do something with the notification
-    });
+// Pass in a callback if you wish to receive notification when the job is complete.
+producer.queueJob(queueName, {data: "Job Data"}, function(err, notification) {
+  // Do something with the notification
+});
 
-    // If you do not wish to receive notification when the job is complete, simply omit the callback
-    producer.queueJob(queueName, {data: "Job Data"});
-
+// If you do not wish to receive notification when the job is complete, simply omit the callback
+producer.queueJob(queueName, {data: "Job Data"});
+```
 
 ### Example of a `worker`: 
     
-    var queueName = 'work-queue';
-    var worker = new RedisQueue();
+```javascript
+var queueName = 'work-queue';
+var worker = new RedisQueue();
 
-    worker.monitorJobQueue(queueName, function(job) {
-      // Do some work...
-      worker.publishNotification(queueName, job, {message: successMessage});
-    });
-
-
-
-
-
-
+worker.monitorJobQueue(queueName, function(job, fn) {
+  // Do some work...
+  fn({yourStatusMessage: "operation successful"});
+});
+```
 

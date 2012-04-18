@@ -1,51 +1,65 @@
 "use strict";
 
 var redis = require('redis')
-  , uuid = require('node-uuid')
-  , Redis = require('./lib/redis');
+  , uuid = require('node-uuid');
 
 var RedisQueue = function(conf) {
-  this.client = new Redis(conf);
-  this.conf = conf;
+  var self = this;
+
+  conf = conf || {};
+  conf.port = conf.port || 6379;
+  conf.host = conf.host || 'localhost';
+
+  this.client = redis.createClient(conf.port, conf.host, conf);
+  this.notificationClient = redis.createClient(conf.port, conf.host, conf);
+  this.notify = {};
+
+  this.notificationClient.on('message', function(channel, message) {
+    message = JSON.parse(message);
+    if (self.notify.hasOwnProperty(message.id)) {
+      self.notify[message.id].call(null, null, message.message);
+      delete self.notify[message.id];
+    }
+  });
+
 }
 
 RedisQueue.prototype.queueJob = function(queueName, jobDescription, cb) {
   var jobID = uuid.v4();
-  jobDescription._jobID = jobID;
-  
   try {
-    this.client.rpush(queueName, JSON.stringify(jobDescription));
-  }
-  catch(err) {
+    var message = JSON.stringify({
+      id: jobID,
+      message: jobDescription
+    });
+    this.client.rpush(queueName, message);
+    if (cb) {
+      this.notificationClient.subscribe('notification:' + queueName);
+      this.notify[jobID] = cb;
+    }
+  } catch(err) {
     cb(err);
   }
-  
-  if (cb) {
-    var notificationClient = new Redis(this.conf);
-    notificationClient.subscribe(queueName + '-notification:' + jobID);
-    notificationClient.on('message', function(channel, message) {
-      cb(null, JSON.parse(message));
-      notificationClient.quit();
-    });
-  }
+
 }
 
 RedisQueue.prototype.monitorJobQueue = function(queueName, cb) {
   var self = this;
-  (function poll() {
-    self.client.blpop(queueName, 0, function(err, jobDesciption) {
-      if (jobDesciption) {
-        cb(JSON.parse(jobDesciption[1]));
-      }
-      setInterval(poll, 0);
-    });  
-  })();
-}
-
-RedisQueue.prototype.publishNotification = function(queueName, jobDescription, data) {
-  var publishClient = new Redis(this.conf);
-  publishClient.publish(queueName + '-notification:' + jobDescription._jobID, JSON.stringify(data));
-  publishClient.quit();
+  self.client.blpop(queueName, 0, function(err, job) {
+    job = JSON.parse(job[1]);
+    if (job) {
+      var id = job.id;
+      var jobDescription = job.message;
+      var fn = function(data) {
+        var message = JSON.stringify({
+          id: id,
+          message: data
+        });
+        self.client.publish('notification:' + queueName, message);
+      };
+      cb(jobDescription, fn);
+    }
+    self.monitorJobQueue(queueName, cb);
+  });
 }
 
 module.exports = RedisQueue;
