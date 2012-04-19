@@ -1,0 +1,18 @@
+{
+  "name": "pika-queue",
+  "description": "PikaQueue provides a simple abstraction to managing job queues in redis.",
+  "author": "Scott Hillman <scotth@mediarain.com>",
+  "version": "0.0.4",
+  "main": "index.js",
+  "dependencies": {
+    "node-uuid": "*",
+    "hiredis": "*",
+    "redis": "*"
+  },
+  "devDependencies": {
+    "async": "*",
+    "mocha": "*",
+    "should": "*"
+  },
+  "engine": "node >= 0.6.6"
+}
