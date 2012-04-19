@@ -54,7 +54,7 @@ PikaQueue.prototype.monitorJobQueue = function(queueName, cb) {
           id: id,
           message: data
         });
-        self.client.publish('notification:' + queueName, message);
+        self.notificationClient.publish('notification:' + queueName, message);
       };
       cb(jobDescription, notificationFunc);
     }
