@@ -44,7 +44,7 @@ PikaQueue.prototype.queueJob = function(queueName, jobDescription, cb) {
 
 PikaQueue.prototype.monitorJobQueue = function(queueName, cb) {
   var self = this;
-  self.client.blpop(queueName, 20, function(err, job) {
+  self.client.blpop(queueName, 0, function(err, job) {
     job = JSON.parse(job[1]);
     if (job) {
       var id = job.id;
