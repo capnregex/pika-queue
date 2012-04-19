@@ -1,6 +1,6 @@
-# RedisQueue
+# PikaQueue
 
-**RedisQueue** provides a simple abstraction to managing job queues in redis. 
+**PikaQueue** provides a simple abstraction to managing job queues in redis. 
 
 There are two players involved in a job queue: a `producer` and a `worker`. 
 
@@ -12,7 +12,7 @@ A `worker` in an entity that monitors a job queue, processes the job, and then s
 
 ```javascript
 var queueName = 'work-queue';
-var producer = new RedisQueue();
+var producer = new PikaQueue();
 
 // Pass in a callback if you wish to receive notification when the job is complete.
 producer.queueJob(queueName, {data: "Job Data"}, function(err, notification) {
@@ -27,11 +27,11 @@ producer.queueJob(queueName, {data: "Job Data"});
     
 ```javascript
 var queueName = 'work-queue';
-var worker = new RedisQueue();
+var worker = new PikaQueue();
 
-worker.monitorJobQueue(queueName, function(job, fn) {
+worker.monitorJobQueue(queueName, function(job, notificationFunc) {
   // Do some work...
-  fn({yourStatusMessage: "operation successful"});
+  notificationFunc({yourStatusMessage: "operation successful"});
 });
 ```
 

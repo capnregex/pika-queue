@@ -3,7 +3,7 @@
 var redis = require('redis')
   , uuid = require('node-uuid');
 
-var RedisQueue = function(conf) {
+var PikaQueue = function(conf) {
   var self = this;
 
   conf = conf || {};
@@ -24,7 +24,7 @@ var RedisQueue = function(conf) {
 
 }
 
-RedisQueue.prototype.queueJob = function(queueName, jobDescription, cb) {
+PikaQueue.prototype.queueJob = function(queueName, jobDescription, cb) {
   var jobID = uuid.v4();
   try {
     var message = JSON.stringify({
@@ -42,24 +42,24 @@ RedisQueue.prototype.queueJob = function(queueName, jobDescription, cb) {
 
 }
 
-RedisQueue.prototype.monitorJobQueue = function(queueName, cb) {
+PikaQueue.prototype.monitorJobQueue = function(queueName, cb) {
   var self = this;
-  self.client.blpop(queueName, 0, function(err, job) {
+  self.client.blpop(queueName, 20, function(err, job) {
     job = JSON.parse(job[1]);
     if (job) {
       var id = job.id;
       var jobDescription = job.message;
-      var fn = function(data) {
+      var notificationFunc = function(data) {
         var message = JSON.stringify({
           id: id,
           message: data
         });
         self.client.publish('notification:' + queueName, message);
       };
-      cb(jobDescription, fn);
+      cb(jobDescription, notificationFunc);
     }
     self.monitorJobQueue(queueName, cb);
   });
 }
 
-module.exports = RedisQueue;
+module.exports = PikaQueue;
