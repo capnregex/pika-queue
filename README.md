@@ -31,7 +31,8 @@ var worker = new PikaQueue();
 
 worker.monitorJobQueue(queueName, function(job, notificationFunc) {
   // Do some work...
-  notificationFunc({yourStatusMessage: "operation successful"});
+  var err = null;
+  notificationFunc(err, {yourStatusMessage: "operation successful"});
 });
 ```
 

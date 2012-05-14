@@ -17,7 +17,7 @@ var PikaQueue = function(conf) {
   this.notificationClient.on('message', function(channel, message) {
     message = JSON.parse(message);
     if (self.notify.hasOwnProperty(message.id)) {
-      self.notify[message.id].call(null, null, message.message);
+      self.notify[message.id].call(null, message.err, message.message);
       delete self.notify[message.id];
     }
   });
@@ -49,12 +49,13 @@ PikaQueue.prototype.monitorJobQueue = function(queueName, cb) {
     if (job) {
       var id = job.id;
       var jobDescription = job.message;
-      var notificationFunc = function(data) {
-        var message = JSON.stringify({
+      var notificationFunc = function(err, data) {
+        var bundle = JSON.stringify({
           id: id,
-          message: data
+          message: data,
+          err: err
         });
-        self.notificationClient.publish('notification:' + queueName, message);
+        self.notificationClient.publish('notification:' + queueName, bundle);
       };
       cb(jobDescription, notificationFunc);
     }

@@ -11,7 +11,7 @@ describe('Pika Queue', function() {
     var worker = new PikaQueue();
 
     worker.monitorJobQueue(queueName, function(job, fn) {
-      fn({message: successMessage});
+      fn(null, {message: successMessage});
     });
     setTimeout(function() {
       producer.queueJob(queueName, {job: "First job"}, function(err, data) {
@@ -40,7 +40,7 @@ describe('Pika Queue', function() {
     var worker = new PikaQueue();
 
     worker.monitorJobQueue(queueName, function(job, notificationFunc) {
-      notificationFunc({message: successMessage});
+      notificationFunc(null, {message: successMessage});
     });
 
     async.parallel([
@@ -72,7 +72,7 @@ describe('Pika Queue', function() {
     producer.queueJob(queueName, {job: "My test job"});
 
     worker.monitorJobQueue(queueName, function(job, fn) {
-      fn({message: successMessage});
+      fn(null, {message: successMessage});
       done();
     });
   });

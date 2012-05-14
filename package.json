@@ -2,7 +2,7 @@
   "name": "pika-queue",
   "description": "PikaQueue provides a simple abstraction to managing job queues in redis.",
   "author": "Scott Hillman <scotth@mediarain.com>",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "main": "index.js",
   "repository": "git://github.com/ifit/pika-queue.git",
   "homepage": "https://github.com/ifit/pika-queue",
